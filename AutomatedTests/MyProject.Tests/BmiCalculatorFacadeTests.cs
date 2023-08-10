@@ -1,35 +1,41 @@
 ﻿using FluentAssertions;
+using Moq;
 
 namespace MyProject.Tests
 {
     public class BmiCalculatorFacadeTests
     {
-        private const string OVERWEIGHT_SUMMARY = "You are underweight, you should put on some weight";
+        private const string OVERWEIGHT_SUMMARY = "You are a bit overweight";
+        private const string UNDERWEIGHT_SUMMARY = "You are underweight, you should put on some weight";
+        private const string NORMAL_SUMMARY = "Your weight is normal, keep it up";
+        private const string OBESITY_SUMMARY = "You should take care of your obesity";
+        private const string EXTREMEOBESITY_SUMMARY = "Your extreme obesity might cause health problems";
 
-        [Fact]
-        public void BmiCalculatorFacade_ForMetricType_GetCorrectMetricSystem()
+        [Theory]
+        [InlineData(BmiClassification.Underweight, UNDERWEIGHT_SUMMARY)]
+        [InlineData(BmiClassification.Overweight, OVERWEIGHT_SUMMARY)]
+        [InlineData(BmiClassification.ExtremeObesity, EXTREMEOBESITY_SUMMARY)]
+        [InlineData(BmiClassification.Normal, NORMAL_SUMMARY)]
+        [InlineData(BmiClassification.Obesity, OBESITY_SUMMARY)]
+        public void BmiCalculatorFacade_ForMetricType_GetCorrectSummary(BmiClassification bmiClassification, string expectedResult)
         {
             //arrange
+            
+            var bmiDeterminatorMoq = new Mock<IBmiDeterminator>();
+            bmiDeterminatorMoq
+                .Setup(x => x.DetermineBmi(It.IsAny<double>()))
+                .Returns(bmiClassification);
 
-            var bmiCalculatorFacade = new BmiCalculatorFacade
-                (UnitSystem.Metric, new BmiDeterminator());
-
-            var weight = 50;
-            var heigth = 180;
+            var bmiCalculatorFacade = 
+                new BmiCalculatorFacade(UnitSystem.Metric, bmiDeterminatorMoq.Object);
 
             //act
 
-            var result = bmiCalculatorFacade.GetResult(weight, heigth);
+            var result = bmiCalculatorFacade.GetResult(1, 1);
 
             //assert
 
-            //Assert.Equal(15.43, result.Bmi);
-            //Assert.Equal(BmiClassification.Underweight, result.BmiClassification);
-            //Assert.Equal(OVERWEIGHT_SUMMARY, result.Summary);
-
-            result.Bmi.Should().Be(15.43);
-            result.BmiClassification.Should().Be(BmiClassification.Underweight);
-            result.Summary.Should().Be(OVERWEIGHT_SUMMARY);
+            result.Summary.Should().Be(expectedResult);
         }
     }
-}90
+}
