@@ -1,17 +1,26 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MyProject.Tests.Data;
 
 namespace MyProject.Tests
 {
     public class MetricBmiCalculatorTests
     {
+        public static IEnumerable<object[]> GetSampleData()
+        {
+            yield return new object[] {80, 180, 24.69};
+            yield return new object[] {75, 180, 23.15};
+            yield return new object[] {55, 190, 15.24};
+        }
+        
+
+
         [Theory]
-        [InlineData(80, 180, 24.69)]
-        [InlineData(75, 180, 23.15)]
-        [InlineData(55, 190, 15.24)]
+        [MemberData(nameof(GetSampleData))]
         public void CalculateBmi_ForCorrectWeightAndHeight_GetBmi(double weight, double height, double expected)
         {
             //arrange
@@ -28,12 +37,7 @@ namespace MyProject.Tests
         }
 
         [Theory]
-        [InlineData(0, 180)]
-        [InlineData(75, 0)]
-        [InlineData(-8, 190)]
-        [InlineData(8, -190)]
-        [InlineData(0, 0)]
-        [InlineData(-1, -1)]
+        [ClassData(typeof(MetricBmiCalculatorTestData))]
         public void CalculateBmi_ForIncorrectWeightOrHeight_ThrowArgumentException(double weight, double height)
         {
             //arrange

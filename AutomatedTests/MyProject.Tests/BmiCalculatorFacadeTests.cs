@@ -1,10 +1,19 @@
 ﻿using FluentAssertions;
 using Moq;
+using Xunit.Abstractions;
 
 namespace MyProject.Tests
 {
     public class BmiCalculatorFacadeTests
     {
+        private readonly ITestOutputHelper _outputHelper;
+
+        public BmiCalculatorFacadeTests(ITestOutputHelper outputHelper)
+        {
+            _outputHelper = outputHelper;
+        }
+
+
         private const string OVERWEIGHT_SUMMARY = "You are a bit overweight";
         private const string UNDERWEIGHT_SUMMARY = "You are underweight, you should put on some weight";
         private const string NORMAL_SUMMARY = "Your weight is normal, keep it up";
@@ -32,6 +41,8 @@ namespace MyProject.Tests
             //act
 
             var result = bmiCalculatorFacade.GetResult(1, 1);
+
+            _outputHelper.WriteLine($"{result.Bmi}, {result.BmiClassification}, {result.Summary}");
 
             //assert
 
