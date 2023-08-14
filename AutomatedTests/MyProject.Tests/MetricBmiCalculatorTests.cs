@@ -36,8 +36,10 @@ namespace MyProject.Tests
             Assert.Equal(expected, result);
         }
 
+        // 2 WERSJE, jedna z zwyklym ClassData, a druga jako "generyczna" z argumentem do jsona.
         [Theory]
-        [ClassData(typeof(MetricBmiCalculatorTestData))]
+        // [ClassData(typeof(MetricBmiCalculatorTestData))]
+        [JsonTestData("Data/MetricBmiCalculatorTestData.json")]
         public void CalculateBmi_ForIncorrectWeightOrHeight_ThrowArgumentException(double weight, double height)
         {
             //arrange
